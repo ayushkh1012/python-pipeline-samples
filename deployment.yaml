@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-app
+  labels:
+    app: python-app
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      containers:
+        - name: python-container
+          image: ayushkh/test:latest  # Replace this with your image name
+          ports:
+            - containerPort: 8080     # The port your Python app listens on
+          env:
+            - name: ENVIRONMENT
+              value: "production"      # Example of environment variable
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-app-service
+spec:
+  selector:
+    app: python-app
+  ports:
+    - protocol: TCP
+      port: 80                    # External port to expose the service
+      targetPort: 8080             # Port the container listens on
+  type: ClusterIP                  # Type of service (ClusterIP, NodePort, LoadBalancer)
